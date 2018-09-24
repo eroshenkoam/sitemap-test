@@ -63,7 +63,7 @@ public class SitemapTest {
         }
     }
 
-    @Test(timeout = 10000L)
+    @Test(timeout = 60000L)
     public void responseCodeTest() throws Exception {
         assertThat(new URL(url).openConnection())
                 .hasFieldOrPropertyWithValue("responseCode", 200);
