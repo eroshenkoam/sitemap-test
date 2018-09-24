@@ -1,6 +1,7 @@
 package io.eroshenkoam.sitemap;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.googlecode.junittoolbox.ParallelParameterized;
 import io.eroshenkoam.sitemap.dto.Sitemap;
 import io.eroshenkoam.sitemap.dto.Url;
 import org.junit.Test;
@@ -21,7 +22,7 @@ import java.util.zip.GZIPInputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-@RunWith(Parameterized.class)
+@RunWith(ParallelParameterized.class)
 public class SitemapTest {
 
     private static final String SITEMAP_URL = "SITEMAP_URL";
@@ -76,7 +77,7 @@ public class SitemapTest {
     private static Integer getMaxUrlCount() {
         return Optional.ofNullable(System.getenv(MAX_URL_COUNT))
                 .map(Integer::parseInt)
-                .orElse(1000);
+                .orElse(100);
     }
 
     private static <T> List<T> readListValue(final String url, Class<T> type) {
