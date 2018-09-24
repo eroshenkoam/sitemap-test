@@ -1,9 +1,27 @@
-plugins {
-    id 'java'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "io.qameta.allure:allure-gradle:2.5"
+    }
 }
 
 group 'io.eroshenkoam.sitemap'
 version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'io.qameta.allure'
+
+allure {
+    version = '2.7.0'
+    aspectjweaver = true
+    autoconfigure = true
+
+    useJUnit4 {
+        version = '2.7.0'
+    }
+}
 
 sourceCompatibility = 1.8
 
@@ -17,6 +35,7 @@ dependencies {
 
     compile('commons-io:commons-io:2.6')
 
+    testCompile('io.qameta.allure:allure-junit4:2.7.0')
     testCompile('org.assertj:assertj-core:3.10.0')
     testCompile('junit:junit:4.12')
 }
