@@ -13,10 +13,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +28,7 @@ public class SitemapTest {
     private static final String SITEMAP_URL = "SITEMAP_URL";
     private static final String MAX_URL_COUNT = "MAX_URL_COUNT";
 
-    private final Map<String, String> unique = new HashMap<>();
+    private final Map<String, String> unique = new ConcurrentHashMap<>();
 
     @Parameterized.Parameter(0)
     public String sitemap;
