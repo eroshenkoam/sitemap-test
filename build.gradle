@@ -1,5 +1,3 @@
-import java.util.Optional
-
 group 'io.eroshenkoam.sitemap'
 version '1.0-SNAPSHOT'
 
@@ -24,4 +22,9 @@ dependencies {
     testCompile('com.googlecode.junit-toolbox:junit-toolbox:2.4')
     testCompile('org.assertj:assertj-core:3.10.0')
     testCompile('junit:junit:4.12')
+}
+
+test {
+    reports.junitXml.enabled = false
+    reports.html.enabled = false
 }

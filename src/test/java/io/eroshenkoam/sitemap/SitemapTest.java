@@ -10,6 +10,7 @@ import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 @RunWith(ParallelParameterized.class)
@@ -45,19 +45,21 @@ public class SitemapTest {
                 parameters.add(new Object[]{sitemap.getLoc(), url.getLoc()});
             });
         });
-        final Integer maxUrlCount = getMaxUrlCount();
-        return parameters.subList(0, maxUrlCount);
+        final Optional<Integer> maxUrlCount = getMaxUrlCount();
+        return maxUrlCount.map(count -> parameters.subList(0, count)).orElse(parameters);
     }
 
     @Test
     public void ampTest() {
-        assertThat(url).doesNotContain("&amp");
+        if (url.contains("&amp")) {
+            fail(String.format("[amp] %s contains &amp", url));
+        }
     }
 
     @Test
     public void uniqueTest() {
         if (unique.containsKey(url)) {
-            fail(String.format("Url %s already contains in file: %s", url, sitemap));
+            fail(String.format("[unique] %s already present in file: %s", url, sitemap));
         } else {
             unique.put(url, sitemap);
         }
@@ -65,8 +67,10 @@ public class SitemapTest {
 
     @Test(timeout = 60000L)
     public void responseCodeTest() throws Exception {
-        assertThat(new URL(url).openConnection())
-                .hasFieldOrPropertyWithValue("responseCode", 200);
+        final int code = ((HttpURLConnection) new URL(url).openConnection()).getResponseCode();
+        if (code != 200) {
+            fail(String.format("[code] %s: %s", url, code));
+        }
     }
 
     private static String getSitemapUrl() {
@@ -74,10 +78,9 @@ public class SitemapTest {
                 .orElse("https://realty.yandex.ru/sitemap.xml");
     }
 
-    private static Integer getMaxUrlCount() {
+    private static Optional<Integer> getMaxUrlCount() {
         return Optional.ofNullable(System.getenv(MAX_URL_COUNT))
-                .map(Integer::parseInt)
-                .orElse(100);
+                .map(Integer::parseInt);
     }
 
     private static <T> List<T> readListValue(final String url, Class<T> type) {
@@ -87,6 +90,7 @@ public class SitemapTest {
             throw new RuntimeException(e);
         }
     }
+
 
     private static <T> List<T> readListValue(final InputStream stream, Class<T> type) throws IOException {
         final XmlMapper mapper = new XmlMapper();
