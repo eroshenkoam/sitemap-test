@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.googlecode.junittoolbox.ParallelParameterized;
 import io.eroshenkoam.sitemap.dto.Sitemap;
 import io.eroshenkoam.sitemap.dto.Url;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -75,11 +76,12 @@ public class SitemapTest {
 
     private static String getSitemapUrl() {
         return Optional.ofNullable(System.getenv(SITEMAP_URL))
-                .orElse("https://realty.yandex.ru/sitemap.xml");
+                .orElseThrow(() -> new NullPointerException("sitemap url can't be null"));
     }
 
     private static Optional<Integer> getMaxUrlCount() {
         return Optional.ofNullable(System.getenv(MAX_URL_COUNT))
+                .filter(StringUtils::isNumeric)
                 .map(Integer::parseInt);
     }
 
