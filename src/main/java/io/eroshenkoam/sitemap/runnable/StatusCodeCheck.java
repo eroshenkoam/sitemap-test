@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
+
+import static org.awaitility.Awaitility.await;
 
 /**
  * @author Artem Eroshenko.
@@ -16,6 +19,8 @@ public class StatusCodeCheck implements SafeRunnable {
 
     private static final Integer RESPONSE_CODE_OK = 200;
 
+    private static final Integer RETRY_COUNT = 5;
+
     private final SitemapData data;
 
     public StatusCodeCheck(final SitemapData data) {
@@ -25,7 +30,7 @@ public class StatusCodeCheck implements SafeRunnable {
     @Override
     public void runUnsafe() throws Throwable {
         LOGGER.debug("check {}", data.getUrl());
-        final int code = ((HttpURLConnection) new URL(data.getUrl()).openConnection()).getResponseCode();
+        int code = getStatusCode(data.getUrl());
         if (code != RESPONSE_CODE_OK) {
             LOGGER.info("{}: {}", data.getUrl(), code);
         }
@@ -36,4 +41,15 @@ public class StatusCodeCheck implements SafeRunnable {
         LOGGER.info(String.format("%s: %s", data.getUrl(), e.getMessage()));
     }
 
+    private static int getStatusCode(final String url) throws Throwable {
+        int current = 0;
+        int code;
+        do {
+            code = ((HttpURLConnection) new URL(url).openConnection()).getResponseCode();
+            if (current > 0) {
+                Thread.sleep(1000);
+            }
+        } while (code != RESPONSE_CODE_OK && current++ < RETRY_COUNT);
+        return code;
+    }
 }

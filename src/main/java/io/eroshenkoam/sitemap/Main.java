@@ -44,7 +44,7 @@ public class Main {
         });
 
         pool.shutdown();
-        pool.awaitTermination(2, TimeUnit.HOURS);
+        pool.awaitTermination(4, TimeUnit.HOURS);
         pool.shutdownNow();
     }
 
