@@ -21,13 +21,13 @@ public class AmpCheck implements SafeRunnable{
     public void runUnsafe() throws Throwable {
         LOGGER.debug("check {}", data.getUrl());
         if (data.getUrl().contains("&amp")) {
-            LOGGER.info("{}: contains &amp", data.getUrl());
+            LOGGER.info("{} : contains &amp", data.getUrl());
         }
     }
 
     @Override
     public void onError(Throwable e) {
-        LOGGER.info("{}: {}", data.getUrl(), e.getMessage());
+        LOGGER.info("{} : {}", data.getUrl(), e.getMessage());
     }
 
 }

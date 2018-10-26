@@ -34,7 +34,7 @@ public class UniqueCheck implements SafeRunnable {
 
     @Override
     public void onError(Throwable e) {
-        LOGGER.info(String.format("%s: %s", data.getUrl(), e.getMessage()));
+        LOGGER.info(String.format("%s : %s", data.getUrl(), e.getMessage()));
     }
 
 }

@@ -32,13 +32,13 @@ public class StatusCodeCheck implements SafeRunnable {
         LOGGER.debug("check {}", data.getUrl());
         int code = getStatusCode(data.getUrl());
         if (code != RESPONSE_CODE_OK) {
-            LOGGER.info("{}: {}", data.getUrl(), code);
+            LOGGER.info("{} : {}", data.getUrl(), code);
         }
     }
 
     @Override
     public void onError(Throwable e) {
-        LOGGER.info(String.format("%s: %s", data.getUrl(), e.getMessage()));
+        LOGGER.info(String.format("%s : %s", data.getUrl(), e.getMessage()));
     }
 
     private static int getStatusCode(final String url) throws Throwable {
