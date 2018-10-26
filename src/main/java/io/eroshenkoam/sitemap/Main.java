@@ -30,8 +30,8 @@ public class Main {
 
     private static final String SITEMAP_URL = "SITEMAP_URL";
 
+    private static final String URLS_COUNT = "URLS_COUNT";
     private static final String POOL_SIZE = "POOL_SIZE";
-    private static final String URL_COUNT = "URL_COUNT";
 
     public static void main(String[] args) throws Exception {
         final List<SitemapData> parameters = getParameters();
@@ -80,11 +80,11 @@ public class Main {
                 parameters.add(data);
             });
         });
-        return getUrlCount().map(count -> parameters.subList(0, count)).orElse(parameters);
+        return getUrlsCount().map(count -> parameters.subList(0, count)).orElse(parameters);
     }
 
-    private static Optional<Integer> getUrlCount() {
-        return Optional.ofNullable(System.getenv(URL_COUNT))
+    private static Optional<Integer> getUrlsCount() {
+        return Optional.ofNullable(System.getenv(URLS_COUNT))
                 .filter(StringUtils::isNumeric)
                 .map(Integer::parseInt);
     }
