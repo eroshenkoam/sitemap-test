@@ -15,16 +15,24 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'io.eroshenkoam.sitemap.Main'
+    }
+}
+
+task sitemap(type:JavaExec) {
+    main = 'io.eroshenkoam.sitemap.Main'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 dependencies {
     compile('com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.4')
     compile('org.projectlombok:lombok:1.18.2')
+    compile('org.slf4j:slf4j-simple:1.7.25')
 
     compile('org.apache.commons:commons-lang3:3.8.1')
     compile('commons-io:commons-io:2.6')
-
-    testCompile('com.googlecode.junit-toolbox:junit-toolbox:2.4')
-    testCompile('org.assertj:assertj-core:3.10.0')
-    testCompile('junit:junit:4.12')
 }
 
 test {

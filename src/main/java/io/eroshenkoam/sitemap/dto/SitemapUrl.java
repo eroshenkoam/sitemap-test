@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Sitemap {
+public class SitemapUrl {
 
     private String loc;
 
