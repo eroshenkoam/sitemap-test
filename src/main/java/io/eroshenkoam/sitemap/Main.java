@@ -65,8 +65,7 @@ public class Main {
 
     private static String getSitemapUrl() {
         return Optional.ofNullable(System.getenv(SITEMAP_URL))
-                .orElse("https://realty.yandex.ru/sitemap.xml");
-//                .orElseThrow(() -> new NullPointerException("sitemap url can't be null"));
+                .orElseThrow(() -> new NullPointerException("sitemap url can't be null"));
     }
 
     private static List<SitemapData> getParameters() {
