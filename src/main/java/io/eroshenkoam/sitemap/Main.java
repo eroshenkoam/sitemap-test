@@ -10,9 +10,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +40,12 @@ public class Main {
     private static final String URLS_COUNT = "URLS_COUNT";
     private static final String POOL_SIZE = "POOL_SIZE";
 
-    public static void main(String[] args) throws Exception {
-        final List<SitemapData> parameters = getParameters();
+    private static final String GZIP = "GZIP";
 
+    public static void main(String[] args) throws Exception {
+        setupHosttsValid();
+
+        final List<SitemapData> parameters = getParameters();
         final ExecutorService pool = Executors.newFixedThreadPool(getPoolSize());
         parameters.forEach(data -> {
             pool.execute(new StatusCodeCheck(data));
@@ -52,7 +62,8 @@ public class Main {
     private static <T> List<T> readListValue(final String url, Class<T> type) {
         LOGGER.info("Read url {}", url);
         try (InputStream stream = new URL(url).openStream()) {
-            return readListValue(new GZIPInputStream(stream), type);
+            final InputStream nested = isGZIP() ? new GZIPInputStream(stream) : stream;
+            return readListValue(nested, type);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -93,5 +104,33 @@ public class Main {
                 .filter(StringUtils::isNumeric)
                 .map(Integer::parseInt)
                 .orElse(10);
+    }
+
+    private static Boolean isGZIP() {
+        return Optional.ofNullable(System.getenv(GZIP))
+                .map(Boolean::getBoolean)
+                .orElse(false);
+    }
+
+    private static void setupHosttsValid() throws Exception {
+        final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
+        }
+        };
+
+        final SSLContext sc = SSLContext.getInstance("SSL");
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+        final HostnameVerifier allHostsValid = (hostname, session) -> true;
+        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
     }
 }
